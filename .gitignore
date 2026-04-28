@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Editors / OS
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# Local artifacts
+/tmp/
+*.log
+
+# Secrets (never commit the real file; harness reads from ~/.dexbox/shared/creds.json)
+creds.json
+*.pem
+*.key
