@@ -19,3 +19,16 @@ venv/
 creds.json
 *.pem
 *.key
+
+# Per-run artifacts carry operator-specific actuals (project IDs, phone
+# numbers, run-specific state, parcel inquiries, third-party seller
+# emails, etc.). The template (manifest-template.md) is in git;
+# realized per-run state is not. Replicators build their own runs
+# against their own infra. To force-add a specific file as a redacted
+# example: `git add -f <path>`.
+experiments/*/runs/
+
+# Operator-side env file consumed by scripts (project ID, bucket, sink
+# phone fallbacks if not in GSM yet, etc.).
+.crux-land/preflight.env
+experiments/*/scripts/.operator.env

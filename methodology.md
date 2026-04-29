@@ -322,6 +322,97 @@ path, Docent collection naming. Every row is concrete — no unresolved
 
 ---
 
+## §3.6 Operator-actuals indirection
+
+### Purpose
+A protocol that hardcodes operator-specific identifiers (cloud project
+IDs, bucket names, controller hostnames, sink phone numbers, Twilio
+outbound numbers, the operator's own email addresses) cannot be shared
+publicly without leaking those identifiers — and the methodology pin
+pattern (§9) needs the protocol to be a stable, replicable artifact.
+This section resolves the tension.
+
+### Decisions
+- `[DECISION] indirection sigils` — every operator-specific value is
+  referenced symbolically in the protocol. Two sigils are used:
+  - **`<see manifest:infra.<key>>`** — the value lives in the per-run
+    manifest's "Resolved infra" section under the named key.
+    Operator-specific but not credential-grade (project IDs, bucket
+    names, VM names, channel names).
+  - **`<GSM:<secret-name>>`** — the value lives in GCP Secret Manager
+    (or the equivalent secrets backend named in §3 inputs). Used for
+    credentials and PII (operator's personal phone, sink-email
+    endpoints). Read at runtime via the secrets-vault CLI; never
+    committed to any file in the repo.
+- `[DECISION] manifest is gitignored` — `runs/<run-id>/manifest.md`
+  contains the resolved actuals and is gitignored by default. The
+  `manifest-template.md` at the experiment root is in git, with every
+  operator-specific value as a `<FILL:>` placeholder. Replicators
+  build their own manifest from the template against their own infra.
+- `[DECISION] scripts read env, not literals` — operator scripts on
+  the controller (preflight, helpers, provisioners) read identifiers
+  from `~/.crux-land/preflight.env` (or experiment-equivalent) which
+  is generated from the manifest at provision time. Scripts do NOT
+  hardcode literals that would change across operators.
+
+### Guidance
+The pinned artifact for replication is `protocol-SHA + manifest-SHA`,
+not just protocol-SHA alone. A run's manifest is what makes the
+protocol concrete; a replicator with a different manifest is running
+the same protocol on different infra, which is the point.
+
+PII (phones, personal emails, real names) goes in the secrets vault
+only — not in the manifest. The manifest names the secret (e.g.
+"sink-phone GSM secret: `<your-experiment>-sink-phone`") so the
+operator can verify the secret exists and the script can read it at
+runtime, but the actual phone number never appears on disk in any
+form a `git add` could capture.
+
+When a literal slips through (a phone number in a USER-CHECKLIST.md
+"already set" annotation; a project ID in a one-off helper script),
+treat it as a leak even if the repo isn't published yet — once the
+commit lands in `git log`, it's permanently in history. Either reword
+the working tree before committing, or run the scrub procedure
+described in `tools/scrub-history.md` (squash + force-push only on
+not-yet-shared branches).
+
+### Anti-patterns
+- **"It's just an example value, not real PII."** If it's an example,
+  pick a clearly-fake placeholder (`+1XXXXXXXXXX`, `you@example.com`).
+  Real values masquerading as examples leak.
+- **A pre-commit scrubber as the primary defense.** Scrubbers are
+  brittle, miss new patterns, and don't help with values already in
+  history. The discipline of "no operator literals in protocol /
+  agent / scripts" is the primary defense; scrubbers can be a
+  belt-and-suspenders backup.
+- **Two repos (public template + private operator-fork).** Workable
+  but creates merge friction and makes the public template's "real
+  example" hard to discover. Single repo with sigils + gitignored
+  manifest is simpler.
+- **Rendered protocol checked in.** A pipeline that renders
+  `protocol.md.j2 + values.yaml → protocol-rendered.md` and commits
+  the rendered output re-leaks every value. Render at runtime if at
+  all; never commit a rendered protocol.
+
+### CRUX-Windows reference
+CRUX-Windows predates this section but achieved the same end state by
+a simpler convention: every operator-specific value is written as
+`<your-...>` (e.g. `<your-gcp-project>`, `<your-crux-channel>`,
+`<your-github-org>`). The redaction was a one-time pre-publication
+sweep (commit `0580159c…`) rather than an ongoing pattern, which
+worked because CRUX-Windows had a small number of identifiers and
+they appeared only in §3 / §3.5. CRUX-Land has more (Twilio outbound
+number, sink phone, sink email, multiple GCS path conventions, etc.)
+and a longer-running operator-iteration phase, so the formal sigil
+pattern (`<see manifest:...>` + `<GSM:...>` + gitignored manifest)
+makes the discipline explicit. Either approach is acceptable — pick
+based on the experiment's identifier surface area. The canonical
+example of the formal pattern is `experiments/land/protocol.md` §3.5
++ `experiments/land/scripts/preflight.env.example` +
+`experiments/land/manifest-template.md`.
+
+---
+
 ## §4. Outputs
 
 ### Purpose

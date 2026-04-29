@@ -1,0 +1,20 @@
+# CRUX-Land controller-side Python dependencies.
+# Installed into the venv used by preflight helpers + workspace-reset.
+# Pin tight to keep replication discipline (§9 invariants).
+
+# Twilio SDK — outbound voice + recording fetch + transcription pull
+twilio==9.3.0
+
+# Used for transcribing Twilio recordings independently if Twilio's own
+# transcription is too slow / unreliable. The helper picks one at runtime
+# based on which API key is present.
+deepgram-sdk==3.7.0
+
+# General HTTP for Regrid / county GIS / health checks
+requests==2.32.3
+
+# OpenClaw event log inspection (telemetry_e2e helper)
+# nothing extra — stdlib only
+
+# IMAP probes (preflight check 6 fallback)
+# stdlib imaplib used directly

@@ -11,19 +11,37 @@ agent can carry it end-to-end with minimal human intervention.
 ## Layout
 
 ```
-crux-x/                                (this repo, yzdong/crux-x)
-├── methodology.md                     the CRUX-X methodology (family-wide)
+crux-x/
+├── methodology.md                     the CRUX-X methodology (family-wide; §1-§10 + §3.6 indirection pattern)
 └── experiments/
-    └── windows/                       the first instantiation: publish a Microsoft Store app
-        ├── protocol.md                Designer output: task-specific protocol (stable across runs)
-        ├── manifest-template.md       Designer output: skeleton the Operator copies per run
-        ├── evaluation.md              Designer-vs-actual-implementation comparison
+    └── <experiment>/
+        ├── protocol.md                Designer output: task-specific protocol; stable across runs of this experiment
+        ├── manifest-template.md       skeleton the Operator copies to runs/<run-id>/manifest.md per run
+        ├── README.md                  one-page summary: task, budget, status, file map
+        ├── agent/                     files staged into the OpenClaw workspace at t=0
+        │   ├── USER.md                human profile + task brief + criteria + evaluation framing
+        │   ├── HEARTBEAT.md           heartbeat-tick checklist
+        │   └── INTERVENTION-*.md      out-of-band operator messages (appear during a live run)
+        ├── scripts/                   Operator-run controller scripts
+        │   ├── provision_*.sh         GCE controller bootstrap
+        │   ├── preflight.sh           pre-kickoff validator (must be green before launch)
+        │   ├── workspace-reset.sh     restore the OpenClaw workspace to t=0 between dry runs
+        │   ├── helpers/               round-trip preflight helpers (Twilio, telemetry, etc.)
+        │   ├── USER-CHECKLIST.md      external-account provisioning walkthrough
+        │   └── preflight.env.example  template for the operator-side env file (gitignored when populated)
+        ├── dry-runs/                  bounded smoke-run artifacts
+        ├── runs/                      per-run state — manifest.md + journal.md; gitignored (operator-specific)
+        ├── evaluation.md              optional: Designer-vs-actual-implementation comparison
         ├── writeup.md                 final report (primary/secondary metrics, narrative); written at run end
-        ├── agent/                     files staged into the OpenClaw workspace (master.md, HEARTBEAT.md, USER.md, skills/)
-        ├── scripts/                   provisioning + preflight + task-specific tool wrappers
-        ├── dry-runs/                  dry-run artifacts (telemetry + notes; transcripts in GCS)
-        └── runs/                      per-run artifact pointers + manifest.md (transcripts in GCS)
+        └── writeup-notes.md           running observations during the run; folded into writeup.md at end
 ```
+
+**Operator-specific values** (your GCP project, GCS bucket, phone
+numbers, etc.) are never hardcoded in `protocol.md` or any other
+committed file. They live either in the per-run `runs/<run-id>/manifest.md`
+(gitignored) or in your secrets vault (read at runtime). The
+indirection pattern is documented in [`methodology.md`](methodology.md)
+§3.6.
 
 Three-document hierarchy: **methodology** → **protocol** → **manifest**.
 Methodology names the family of experiments. Protocol is one task's
@@ -37,15 +55,18 @@ run's plan + actuals (declared intent + resolved state).
   "How to use this document" section at the top of `methodology.md`.
 - Once a protocol exists, a second coding agent ("the Operator") takes
   it and provisions the infrastructure + launches the run. Provisioning
-  specifics for the Windows experiment live under
-  `experiments/windows/scripts/`.
-- During a run, artifacts are mirrored to
-  `gs://<your-gcs-bucket>/<run-id>/`; the per-run directory
-  in `experiments/windows/runs/<run-id>/` holds `manifest.md` (t=0
-  snapshot) + `journal.md` (interventions + deviations, appended
-  during the run), not the transcripts themselves.
+  specifics live under each experiment's `scripts/` directory.
+- During a run, artifacts are mirrored to your GCS bucket at
+  `<bucket>/<run-id>/`; the per-run directory in
+  `experiments/<experiment>/runs/<run-id>/` holds `manifest.md` (t=0
+  snapshot) + `journal.md` (interventions + deviations, appended during
+  the run), not the transcripts themselves.
 
-## Current experiment
+## Current experiments
 
-See [`experiments/windows/README.md`](experiments/windows/README.md) for
-status of the live CRUX-Windows run (kicked off 2026-04-17).
+- **CRUX-Windows** — first experiment, [`experiments/windows/`](experiments/windows/).
+  Run completed (kicked off 2026-04-17); writeup at
+  [`experiments/windows/writeup.md`](experiments/windows/writeup.md).
+- **CRUX-Land** — second experiment, [`experiments/land/`](experiments/land/).
+  Active run kicked off 2026-04-29; status in
+  [`experiments/land/README.md`](experiments/land/README.md).
