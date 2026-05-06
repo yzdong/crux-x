@@ -60,6 +60,8 @@ don't block. When uncertain, prefer flagging over missing.
 Twitter; listing them here doesn't create new exposure.)
 
 - `yangzi@yzdong.me` — Zi's public contact email.
+- `yzdong.me` — Zi's public personal-site domain (where the
+  CRUX-X / CRUX-Vault-Zero blog series lives).
 - `x.com/dongyangzi` — Zi's public Twitter URL.
 - `yzdong` — Zi's GitHub handle.
 - `getnen.ai` — Zi's company domain.

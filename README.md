@@ -13,6 +13,7 @@ agent can carry it end-to-end with minimal human intervention.
 ```
 crux-x/
 ├── methodology.md                     the CRUX-X methodology (family-wide; §1-§10 + §3.6 indirection pattern)
+├── scripts/scrub/                     repo-root LLM-based pre-commit scrub for sensitive content
 └── experiments/
     └── <experiment>/
         ├── protocol.md                Designer output: task-specific protocol; stable across runs of this experiment
@@ -68,5 +69,27 @@ run's plan + actuals (declared intent + resolved state).
   Run completed (kicked off 2026-04-17); writeup at
   [`experiments/windows/writeup.md`](experiments/windows/writeup.md).
 - **CRUX-Land** — second experiment, [`experiments/land/`](experiments/land/).
-  Active run kicked off 2026-04-29; status in
-  [`experiments/land/README.md`](experiments/land/README.md).
+  Run 1 kicked off 2026-04-29; terminated as primary-failed 2026-05-04
+  when the operator retracted the only live pre-bid. Post-mortem in
+  [`experiments/land/writeup-notes.md`](experiments/land/writeup-notes.md);
+  public writeup is the CRUX-X / CRUX-Vault-Zero / path-to-AGI series
+  ([Part 1](https://yzdong.me/blog/crux-x) published; Parts 2 and 3
+  forthcoming).
+
+## Repo tooling
+
+A small LLM-based scrub guards against accidentally committing
+sensitive content (personal info, credentials, internal infrastructure
+identifiers) to this public repo. After cloning, run:
+
+```
+bash scripts/scrub/install-hook.sh
+```
+
+The pre-commit hook calls `scripts/scrub/scrub.py`, which runs Claude
+Haiku 4.5 against `git diff --cached` and blocks the commit on any
+critical/high finding. Requires `ANTHROPIC_API_KEY` in the shell that
+runs `git commit`. Bypass with `git commit --no-verify` if needed.
+
+Edit [`scripts/scrub/SCRUB_PROMPT.md`](scripts/scrub/SCRUB_PROMPT.md)
+to update the rules.
