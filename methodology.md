@@ -118,6 +118,21 @@ intervention count is gameable by the agent — prompt framing can cause
 it to under-ask or over-ask. Treat it as a joint measure with artifact
 quality, not a standalone efficiency score.
 
+**Designer self-interrogation pass before Operator hand-off** (added
+2026-05-04 from CRUX-Land run 1): enumerate every success criterion
+the Designer wrote, label each by source ("operator told me X" / "I
+inferred Y from the brief" / "I assumed Z by methodology default"),
+and challenge the inferences and assumptions. Pay particular attention
+to criteria that might be conflating two distinct success conditions
+— *"buildable on this lot"* is not the same as *"off-grid suitable"*
+even though they're easy to write as one rule. Operator-initiated
+criterion relaxations during the run trigger Designer re-derivation,
+not local edits: a relaxation can lift a floor that was load-bearing
+for a different concept. CRUX-Land run 1 surfaced this — a Day-1
+acreage relaxation lifted the only criterion that even partially
+captured "rural" (no other criterion picked up the load), and a Day-6
+retraction was the consequence.
+
 ### CRUX-Windows reference
 - Hypothesis: can an Opus-4.7 agent, given $500 of API budget, a Windows
   VM + macOS-style controller, and OpenClaw as scaffold, autonomously
@@ -210,6 +225,12 @@ its capability.
 - `[DECISION] workspace shape` — the initial state of the agent's
   persistent workspace (files, directories, any seeded memory). This is
   the most sensitive input per §6.
+- `[DECISION] per-account ownership table` (added 2026-05-04 from
+  CRUX-Land run 1) — for each counterparty account the experiment uses,
+  map ownership across six axes: (a) legal identity, (b) operational
+  control, (c) read access, (d) alert routing, (e) transaction
+  authorization, (f) audit-trail attribution. Different axes can be
+  owned independently by different actors on the same account.
 
 ### Guidance
 Lean minimal. Every file you pre-stage, every recipe you hard-code into a
@@ -217,6 +238,21 @@ prompt, every exotic tool you install — all of that inflates the
 baseline. The point of an open-world eval is to measure what the agent
 can do when given *normal* materials (credentials and a machine), not
 when given a playbook.
+
+**Per-account ownership at design time** (added 2026-05-04). Real-world
+counterparty accounts are not binary "agent-owned" or "operator-owned"
+— they have multiple axes that can be owned independently. KYC binds
+legal identity to the operator at the transaction surface, but
+operational control, read access, and alert routing can land on the
+agent without violating the legal-identity binding. Mapping these at
+design time, not mid-run, prevents the methodology from systematically
+underestimating what agents can do at KYC counterparties. CRUX-Land's
+Bid4Assets bidder account ended up: legal identity = operator (real
+name + SSN), operational control = mostly agent (after login), read
+access = mostly agent (email-of-record routed to agent inbox), alert
+routing = agent → operator via cron, transaction authorization =
+always operator, audit trail = operator. Same account, three different
+actors across six axes.
 
 Credentials specifically: distinguish (a) accounts the human provisions
 pre-run, (b) accounts the agent provisions itself during the run, (c)
@@ -485,6 +521,17 @@ outcome but not recover why.
 - `[DECISION] post-hoc analysis surface` — what tool the transcript is
   loaded into for structured review (Docent, Inspect AI, a custom
   notebook).
+- `[DECISION] out-of-band state monitoring` (added 2026-05-04 from
+  CRUX-Land run 1) — for multi-day real-world tasks, a VM-side cron +
+  multi-channel alerting layer that handles routine state-detection
+  (counterparty inbound mail, public-page polls, registry/recorder
+  index polls) at $0 API spend, decoupled from the heartbeat-driven
+  agent gateway. The protocol specifies which polls run and at what
+  cadence.
+- `[DECISION] cron-fire severity classifier` (added 2026-05-04) — the
+  classifier on each cron fire is **LLM-based by default**;
+  hand-written string-match classifiers are forbidden for any cron
+  output that triggers operator-required notifications.
 
 ### Guidance
 Capture more than you think you need. Post-hoc "I wish I had logged X"
@@ -498,6 +545,24 @@ has a redactor built in.
 
 Live monitoring should be read-only. Anything that injects state back
 into the agent counts as an intervention (§6.3).
+
+**Out-of-band cron monitoring + LLM-classified severity** (added
+2026-05-04). Heartbeat-driven monitoring assumes the agent runs
+continuously. Real-world tasks span days or weeks of external waits,
+and continuous-running heartbeats make budget-preservation impossible
+(see §7). Pair the gateway with a VM cron that handles state-detection
+(IMAP polls of the agent mailbox, public-page polls, registry polls)
+at $0 API spend; the cron writes state to a GCS file and triggers
+alerts on state changes. Each cron fire that surfaces new content runs
+through an LLM classifier (~$0.01 per call) that assigns severity and
+routes accordingly. **String-match classifiers fail systematically on
+real-world counterparty messaging** because the author is guessing
+what subjects, phrasing, and capitalization will arrive — CRUX-Land
+run 1's deposit-cleared near-miss happened because hand-written
+patterns ("deposit posted") missed B4A's actual subject ("Your
+Deposit Has Cleared:..."), routing an urgent email to Slack-only.
+The cost case for "no LLM in cron" is wrong when the cron is
+load-bearing for operator-required notifications.
 
 ### CRUX-Windows reference
 - Schema: `knostic/openclaw-telemetry` v0.1.0 plugin format — events
@@ -557,6 +622,14 @@ measured capability.
   schema — interventions and deviations share one file).
 - `[DECISION] reserved human actions` — things only the human will ever
   do (final publish click, legal form signing, payment authorization).
+- `[DECISION] operator-availability schedule` (added 2026-05-04 from
+  CRUX-Land run 1) — pre-kickoff template enumerating the operator-
+  required windows for the experiment. Each entry: date range,
+  expected duration, required action(s). The Operator confirms
+  availability for each window before kickoff; if any window is
+  infeasible the protocol returns to the Designer for re-scoping.
+  Outside enumerated windows, the cron + multi-channel alerting layer
+  (§5) handles state-surfacing without operator involvement.
 
 ### Guidance
 
@@ -631,6 +704,13 @@ unbounded money or drags on forever.
 - `[DECISION] human-reserved actions` — things only humans do (also
   appears in §6.3 — cross-reference).
 - `[DECISION] kill switch` — how the operator aborts the run if needed.
+- `[DECISION] gateway operating rules` (added 2026-05-04 from CRUX-Land
+  run 1) — gateway default state (OFF or ON) and the operator
+  hygiene rules around restarts.
+- `[DECISION] reserved API-budget moments` (added 2026-05-04) —
+  budget allocated to specific operator-triggered actions
+  (auction-outcome handling, run-end synthesis, intervention
+  follow-ups), not continuous availability.
 
 ### Guidance
 Budget should be enforced in two places: (a) at the scaffold/controller
@@ -647,6 +727,21 @@ review cycle entirely.
 Kill switch should be brutally simple. Stopping the scaffold runtime
 (systemd service, tmux session, whatever) is sufficient; you can
 redeploy a saner HEARTBEAT.md or intervention and resume.
+
+**Gateway operating rules for multi-day real-world tasks** (added
+2026-05-04). The default-ON heartbeat-driven gateway model is a cost
+trap on tasks that span days or weeks. CRUX-Windows post-mortem
+showed $1,333 of post-task-completion idle heartbeat burn over 10
+days; CRUX-Land hit the same shape on Day 2 in a single 15-minute
+span ($575 burned on a single PDF read while the prompt cache TTL
+expired faster than tool calls fired). For real-world tasks, default
+the gateway to OFF: each restart has a specific 1-task purpose, and
+each restart follows a retire-bootstrap-act-kill cycle within ~30
+min (retire the prior session, bootstrap a fresh session with a
+tight CLI inject of the current task, execute the one task, kill
+the gateway). API budget is reserved for specific operator-triggered
+moments rather than continuous availability. The cron-and-alerting
+layer (§5) handles state-monitoring at $0 in the gateway-OFF mode.
 
 ### CRUX-Windows reference
 - Budget: $500 hard cap via `HEARTBEAT.md` rule 1 (agent Slack-warns at
