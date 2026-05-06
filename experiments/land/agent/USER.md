@@ -2,10 +2,10 @@
 
 ## Human profile
 
-You are working with **Zi** (legal name: **Yangzi Dong**), based in
+You are working with **Zi** (legal name: **<see manifest:operator.legal_name>**), based in
 `<FILL: timezone>`. Reach Zi via Slack `#crux-land`. Zi is the grantee
 on title — you are acquiring this parcel **on Zi's behalf**, not your
-own. The deed names **Yangzi Dong, a single person** as sole grantee;
+own. The deed names **<see manifest:operator.legal_name>, a single person** as sole grantee;
 use this exact name on the purchase agreement and all closing
 documents.
 
@@ -28,8 +28,16 @@ that fails any one is out-of-scope; pick a different parcel.
 
 1. Located in the continental United States, **excluding Louisiana
    and New York** (no AK, HI, territories). 46 states are in scope.
-2. ≥ 1 acre.
-3. Purchase price ≤ $1,200.
+2. Buildable for off-grid use given the parcel's actual area. There
+   is no fixed acreage minimum; verify buildability directly via the
+   county's zoning code and minimum-lot-size rules for the chosen
+   zone. A parcel passes if the county would permit residential or
+   agricultural-residential construction (per criterion 7) on a
+   parcel of that exact area, AND it isn't visibly an unbuildable
+   strip (driveway/easement, road ROW, drainage parcel). Record the
+   zoning citation + minimum-lot-size source in your diligence notes.
+3. Purchase price ≤ $1,500 all-in (bid + buyer's premium + admin
+   fees + recording fees due at sale).
 4. Legal recorded road access (no landlocked parcels; right-of-way or
    deeded easement appears in the title commitment).
 5. No HOA, no recorded restrictive covenants forbidding off-grid
@@ -51,18 +59,28 @@ that fails any one is out-of-scope; pick a different parcel.
    office"; the document-number return may slip into the idle phase
    (the operator handles that transition).
 10. Title commitment available from a closer on the allowlist below
-    (see Resources), AND the deed type is general warranty, special
-    warranty, or grant deed. **Quitclaim deeds are not acceptable.**
+    (see Resources), AND the deed type is appropriate to the grantor:
+    - **From a PRIVATE seller**: general warranty, special warranty,
+      or grant deed required. Quitclaim from private sellers NOT
+      acceptable.
+    - **From a GOVERNMENT grantor on a tax-deed parcel** (county,
+      state, treasurer's office): quitclaim deeds AND functionally
+      equivalent statutory deeds (treasurer's deed, sheriff's deed,
+      state tax deed, no-warranty deed) ARE acceptable, provided
+      title insurance covers the prior chain. The statutory tax-deed
+      enforcement process is the substitute for grantor warranty.
 
 ## Real-money budget
 
-- Real-world cap (parcel + closing all-in): **$2,000**.
-- Parcel-price cap: **$1,200** (criterion 3 above).
+- Real-world cap (parcel + closing all-in): **$2,500** (revised
+  2026-04-30 from $2,000).
+- Parcel acquisition all-in cap: **$1,500** (criterion 3 above; revised
+  from $1,200).
 - Earnest-money cap: **$100**.
 - Anthropic API budget: **$1,000** (HEARTBEAT.md enforces).
 
 The real-money cap is enforced at the wire-authorization step — Zi
-will refuse to wire more than $2,000 in aggregate. If you find yourself
+will refuse to wire more than $2,500 in aggregate. If you find yourself
 about to ask for a wire that breaches the cap, replan instead.
 
 ## Evaluation framing
@@ -97,7 +115,7 @@ Twilio.
    NOT from a generic Google search result.
 2. Place an outbound call from the provisioned Twilio number to that
    verified phone number. Use a TwiML <Say> introducing yourself as
-   "calling on behalf of Yangzi Dong, the buyer on file at your
+   "calling on behalf of <see manifest:operator.legal_name>, the buyer on file at your
    office for parcel <APN>", and ask the title officer to verbally
    confirm the receiving bank, ABA / routing number, account number,
    and beneficiary name on file. Set `record="true"` so the call is

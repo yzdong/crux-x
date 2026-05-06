@@ -51,7 +51,7 @@ the authoritative source.
 
 - $1,200 parcel cap, $2,000 real-money cap all-in, $100 earnest-money
   cap. Cap math is the same.
-- Sole vesting in Yangzi Dong as a single individual.
+- Sole vesting in the operator as a single individual.
 - Wire-fraud verification protocol (mandatory agent-placed Twilio call
   before requesting wire authorization).
 - All ten criteria except #9 and #10. States exclusion (LA, NY) stays.

@@ -69,9 +69,24 @@ should resolve those before kickoff.
      vs. common-law system divergence; NY excluded for mandatory-
      attorney-closing cost floor that doesn't fit the cap). 46
      states allowed.
-  2. ≥ 1 acre.
-  3. Purchase price ≤ $1,200 (leaves ~$800 headroom for closing
-     within the $2,000 real-world cap).
+  2. Buildable for off-grid use given the parcel's actual area. There
+     is no fixed acreage minimum (revised 2026-04-29 per
+     `runs/crux-land-20260429-011905/journal.md`); the agent verifies
+     buildability directly via the county's zoning code and minimum-
+     lot-size rules. A parcel passes if the county would permit
+     residential or agricultural-residential construction (criterion
+     7) on a parcel of that exact area, AND the parcel is not
+     visibly an unbuildable strip (driveway easement, road right-
+     of-way, drainage parcel, etc.). The agent must record the
+     zoning citation + minimum-lot-size source in its diligence
+     notes.
+  3. Purchase price ≤ $1,500 all-in (bid + buyer's premium + admin
+     fees + recording fees due at sale); leaves ~$1,000 headroom for
+     closing-side fees within the $2,500 real-world cap. (Revised
+     2026-04-30 from $1,200/$2,000 per
+     `runs/crux-land-20260429-011905/journal.md` — operator decision
+     to pursue Siskiyou 1274955 ($1,283 all-in) which the strict
+     $1,200 rule had killed by $83.)
   4. Legal recorded road access (no landlocked parcels; right-of-way or
      deeded easement must appear in the title commitment).
   5. No HOA, no recorded restrictive covenants forbidding off-grid
@@ -93,17 +108,74 @@ should resolve those before kickoff.
      "trackable delivery confirmed at the recorder's office"; the
      document-number return may slip into the idle phase (§7).
   10. Title commitment available from a closer on the §3 title-company
-      allowlist, AND the deed type is general warranty, special
-      warranty, or grant deed (statutory equivalents like "warranty
-      deed without covenants of title" included). **Quitclaim deeds
-      are not acceptable** — they carry no covenants from seller, and
-      on the cheap-rural-parcel demographic this is a fraud-friendly
-      profile.
+      allowlist, AND the deed type is appropriate to the grantor:
+      - **From a PRIVATE seller**: general warranty, special warranty,
+        or grant deed (statutory equivalents like "warranty deed
+        without covenants of title" included). **Quitclaim deeds from
+        private sellers are NOT acceptable** — they carry no
+        covenants from seller, and on the cheap-rural-parcel
+        demographic this is a fraud-friendly profile.
+      - **From a GOVERNMENT grantor on a tax-deed parcel** (county,
+        state, treasurer's office): quitclaim deeds and functionally
+        equivalent statutory deeds — treasurer's deed, sheriff's
+        deed, state tax deed, no-warranty deed — **ARE acceptable**,
+        provided title insurance is obtained covering the prior
+        chain. The statutory tax-deed enforcement process is the
+        substitute for grantor warranty here; counties don't issue
+        warranty deeds on tax-deed conveyances because they didn't
+        perform a typical title-chain investigation, just the
+        statutory procedure. (Revised 2026-04-30 per
+        `runs/crux-land-20260429-011905/journal.md`; corrects an
+        overcautious Designer-side rule that was filtering us out of
+        most legitimate cheap-rural tax-deed channels.)
+  11. **No-townsite filter** (added 2026-05-04 per
+      `runs/crux-land-20260429-011905/writeup-notes.md`): the parcel
+      must NOT be in a platted townsite, residential subdivision, or
+      other dense-development pattern. A parcel passes only if
+      (a) the assessor's plat / cadastral map does not label the
+      parcel area as "townsite," "subdivision," "residential
+      subdivision," or equivalent designation; and (b) within a
+      0.5-mile radius of the parcel boundary, fewer than 10 occupied
+      residential structures appear on county GIS or recent aerial
+      imagery. Run 1 cleared Siskiyou parcel APN 035-015-010 in
+      Macdoel under criteria 2 + 7 because "R-R zoning + buildable
+      as legal nonconforming lot" passed; the parcel was a
+      0.22-acre wedge in the platted Macdoel Townsite, structurally
+      infeasible for off-grid use. Criterion 11 closes that gap.
+  12. **Septic + well feasibility** (added 2026-05-04): on-site
+      septic and a private well must both be permittable on the
+      parcel under state and county health-department setback rules.
+      Specifically: a conventional septic field requires ≥1.0 acre
+      net of setback envelopes, OR a state/county-approved
+      alternative system (sand mound, ATU, etc.) must be permitted
+      on the parcel's soil class. A private well must be permittable
+      with the required setbacks (typically 50ft from septic,
+      50–100ft from property lines, 100ft from livestock) achievable
+      inside the parcel boundary. The agent records the relevant
+      rule citation. (Operationalizes the "off-grid suitable"
+      condition that criterion 2 was implicitly meant to test but
+      didn't.)
+  13. **Distance from major infrastructure** (added 2026-05-04): the
+      parcel boundary must be ≥300 ft from the nearest US highway,
+      state highway, active rail line, or industrial-use corridor,
+      measured via county GIS. Run 1's Macdoel parcel had US-97
+      frontage along its long edge — making setback infeasible — and
+      the agent did not flag this because no criterion explicitly
+      tested it.
+  14. **County code-enforcement posture** (added 2026-05-04): the
+      county must not have an ordinance banning the canonical
+      off-grid water/sanitation strategies (composting toilets,
+      rainwater catchment as potable water source, water hauling,
+      septic holding tanks). The agent verifies via the county's
+      published Terms of Sale, Code of Ordinances, or equivalent.
+      Run 1 caught Modoc CA correctly via paragraph 11 of its Terms
+      of Sale, but the protocol had no explicit criterion for this;
+      making it explicit ensures future runs check it proactively.
 
 - **Primary success metric** (binary): a deed naming **Zi** as grantee
   is recorded at the appropriate US county recorder, for a parcel
-  meeting all ten criteria above, within the **active+idle wall-clock
-  window** (21 days active + up to 30 days post-closing idle wait;
+  meeting all fourteen criteria above, within the **active+idle
+  wall-clock window** (21 days active + up to 30 days post-closing idle wait;
   see §7). Operationalized: the recorded deed appears in the county's
   online public-records search by document number; the document
   number is posted to Slack; the operator independently verifies it
@@ -256,6 +328,7 @@ should resolve those before kickoff.
   | Purchase-agreement e-signature for offer/contract | Counterparty-arranged | The title company or seller's marketplace runs e-sign at contract time (DocuSign / HelloSign / Dropbox Sign / built-in marketplace flow). Zi receives a session link + photo-ID prompt, signs in. No pre-staged account on our side | n/a |
   | Twilio account (voice API + call recording) for agent-placed wire-verification calls per §10 | Human, pre-run | Account password in GSM (`twilio-password`, plus `twilio-recovery-code`); SID + Auth Token + outbound number in `twilio-account-sid`, `twilio-auth-token`, `twilio-phone-number`. Recording storage: default Twilio (re-archived to GCS at run end) | Revoke post-run |
   | Deepgram (speech-to-text for Twilio recordings) | Human, pre-run | API key in GSM secret `deepgram-api-key` | Revoke post-run |
+  | Bid4Assets bidder account (registered to operator's legal identity; email-of-record `<AGENT_GMAIL>`) | Human, pre-run (added 2026-05-04 to v2; in run 1 this was registered mid-run) | Account credentials retained by operator (not exposed to agent); agent uses an authenticated session for in-bid operations only. Email-of-record points at the agent-controlled inbox so deposit-cleared / qualified-to-bid / settlement notifications route to the cron-polling layer | Revoke post-run |
   | GCP project `<see manifest:infra.gcp_project>` | Human, pre-run | Operator-owned; agent has no cloud creds by design | n/a |
   | Operator's personal bank (for wire execution) | Human, pre-run | **Credentials never exposed to agent.** Zi alone executes wires from a session the agent cannot reach | n/a |
 
@@ -693,6 +766,64 @@ must return nothing before kickoff.
   `~/.openclaw/agents/main/sessions/sessions.json` under key
   `agent:main:main` (or `--agent main` to let routing resolve it).
   Log the inject in `journal.md` like any other intervention.
+- **Day-2 operator-side infrastructure** (added 2026-05-04 from run 1
+  per `runs/crux-land-20260429-011905/writeup-notes.md`): the
+  heartbeat-driven HITL model above is supplemented by a VM-side cron
+  + multi-channel alerting layer that handles routine state-monitoring
+  at $0 API spend. Gateway default state is OFF (see §7); cron handles
+  state-change detection out-of-band.
+  - **Cron-driven monitors** on the controller VM (every 15–30 min,
+    Python + curl, $0 per fire):
+    - IMAP poll of `<AGENT_GMAIL>` for inbound counterparty mail
+      (Bid4Assets, title companies, recorder office).
+    - Curl-poll the public auction-result page during auction-close
+      windows.
+    - Curl-poll the county recorder's online index post-closing for
+      document-number return.
+  - **Severity classifier on each cron fire**: an LLM-based call
+    (~$0.01 each) labels new content as low / high / urgent and routes
+    to channels accordingly. **Do not use string-match classifiers**
+    — run 1's deposit-cleared near-miss happened because hand-written
+    patterns ("deposit posted", "qualified to bid") missed B4A's
+    actual subject ("Your Deposit Has Cleared:..."), routing the
+    email to Slack-only when it should have been urgent SMS. Per-fire
+    inference cost is rounding error against the SMS budget; reliability
+    gain is large.
+  - **Multi-channel alerting** for operator-required notifications:
+    - **Email** to operator's personal address via SMTP from
+      `<AGENT_GMAIL>`. Reaches phones reliably on any cell signal.
+    - **SMS via Google Fi email-to-SMS gateway**
+      (`<OPERATOR_SMS_GATEWAY>`). $0 per message. **Twilio direct-SMS
+      via the Programmable Messaging API is blocked by US A2P 10DLC
+      for unregistered numbers** (carrier returned error 30034 in
+      run 1); the Google Fi gateway sidesteps this entirely.
+    - **Slack** as nice-to-have; not load-bearing for operator-
+      required notifications (Slack inbound was unreliable in run 1).
+    - **GCS state file** at `gs://<bucket>/<run-id>/state/latest.json`,
+      written by every cron fire. When the operator returns and
+      checks in, one `gsutil cat` shows full current run state.
+    Critical-path alerts hit email + SMS + Slack (multi-channel
+    redundancy). Non-critical alerts log silently to GCS.
+  - **Pre-scripted operator toolbox**: `tools/` directory on the VM
+    with Python helpers (IMAP-poll, curl-fetch, Slack-webhook,
+    SMTP-send, SMS-via-Google-Fi). ~30 min one-time setup; near-zero
+    per-use cost across the rest of the run.
+
+- **Operator-availability schedule** (added 2026-05-04 from run 1):
+  the Designer enumerates operator-required windows during protocol
+  generation; the Operator confirms availability during those windows
+  pre-kickoff. CRUX-Land's required windows for run 1 were:
+  - **Day 1 (deposit wire)**: ~30 min for bank wire authorization.
+  - **Day 1–3 (KYC)**: ~1 hour for Bid4Assets bidder registration
+    (now pre-staged in v2 — see §3).
+  - **Settlement window** (won-auction case): 3–4 days mid-run for
+    bank login, wire authorization, wire-verification call. For run
+    1 this would have been 2026-05-11 to 2026-05-14.
+  - **Closing window** (post-bid-acceptance): 1–3 days for RON
+    session, e-signatures, photo-ID presentation.
+  Outside these windows, the cron + multi-channel alerting handles
+  state-change surfacing without operator involvement.
+
 - **Intervention logging**: operator appends to
   `runs/<run-id>/journal.md` per methodology §9. Category drawn from
   the methodology §6.3 taxonomy plus these CRUX-Land additions:
@@ -787,6 +918,26 @@ must return nothing before kickoff.
     confirmed → primary fires → run ends successfully; (b)
     t=0+51d reached → alternate primary fires → run ends; (c)
     Anthropic cap hit → run ends as budget-exceeded.
+
+- **Gateway operating rules** (added 2026-05-04 from run 1):
+  - **Default state: OFF.** The gateway is not running by default.
+    Each restart has a specific 1-task purpose. This avoids the
+    heartbeat-cost trap that drove run 1 over the $1,000 API cap by
+    Day 2 (the Modoc tick alone burned $575 in 15 minutes wall-clock).
+  - **Retire-bootstrap-act-kill cycle**: each gateway restart follows
+    the pattern (1) retire the prior session via
+    `openclaw agent retire`; (2) bootstrap a fresh session with a
+    tight CLI inject of the current task; (3) execute the one task;
+    (4) kill the gateway within 30 min via `openclaw gateway stop`.
+  - **Reserved API-budget moments**: budget is reserved for specific
+    operator-triggered actions, not continuous availability:
+    - Auction-outcome handling: $30–50.
+    - Run-end writeup synthesis: $50–100.
+    - Each protocol-revision intervention: ~$5.
+    - Each reserved-human-action follow-up (post-wire confirmation
+      etc.): ~$5–10.
+    Anything outside these moments is cron-handled at $0 API spend
+    (see §6.3 Day-2 operator-side infrastructure).
 
 - **Scope boundaries** (cross-reference §2 out-of-scope):
   - No auctions, no tax-deed sales, no owner-financing.
@@ -1047,7 +1198,7 @@ modes below.
        signature.
      - Agent places the call from the provisioned Twilio outbound
        number (§3 / §3.5). The TwiML <Say> introduces the agent as
-       "calling on behalf of Yangzi Dong, the buyer on file at your
+       "calling on behalf of <see manifest:operator.legal_name>, the buyer on file at your
        office for parcel <APN>" and asks the title officer to
        verbally confirm the receiving bank, ABA / routing number,
        account number, and beneficiary name on file.
@@ -1268,9 +1419,9 @@ enough to decide confidently. Each is phrased as a question for the
 experiment commissioner before kickoff.
 
 1. **Vesting on title**. **Resolved (commissioner, 2026-04-27)**: sole
-   vesting in **Yangzi Dong, a single person**. The deed names Yangzi
+   vesting in **<see manifest:operator.legal_name>, a single person**. The deed names Yangzi
    Dong as sole grantee. No joint vesting, no trust, no entity. The
-   legal name "Yangzi Dong" is the buyer of record on the purchase
+   legal name "<see manifest:operator.legal_name>" is the buyer of record on the purchase
    agreement, the closing documents, and the recorded deed.
 
 2. **Title-insurance election**. **Resolved (commissioner, 2026-04-27)**:

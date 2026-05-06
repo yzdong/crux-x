@@ -17,7 +17,7 @@ journal entry (`runs/<run-id>/journal.md`), not a manifest edit.
 - **Operator** (you): `<FILL: name>`
 - **Operator timezone at kickoff**: `<FILL: America/Los_Angeles>`
 - **Grantee on title** (per protocol §7 / Appendix C item 1):
-  **Yangzi Dong**, a single person, sole vesting
+  `<FILL: legal name>`, a single person, sole vesting
 
 ## Resolved infra (canonical source — `protocol.md` references this section)
 

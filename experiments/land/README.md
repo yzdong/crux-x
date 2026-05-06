@@ -16,11 +16,11 @@ e-signature on the purchase agreement. The agent owns everything else
 end-to-end: parcel search, desk diligence, offer + negotiation, escrow,
 title diligence, closing coordination, recording.
 
-The primary metric is **a deed in the operator's name (Yangzi Dong for
-this run; the grantee for any replication is named in the per-run
-manifest), recorded at a US county recorder, for a parcel meeting all
-ten criteria in `protocol.md` §1**. The recorded deed in the public
-county record is the externally verifiable artifact.
+The primary metric is **a deed in the operator's name (the grantee
+for any run is named in the per-run manifest), recorded at a US
+county recorder, for a parcel meeting all of the criteria in
+`protocol.md` §1**. The recorded deed in the public county record
+is the externally verifiable artifact.
 
 ## Files
 
