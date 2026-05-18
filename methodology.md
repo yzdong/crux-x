@@ -532,6 +532,12 @@ outcome but not recover why.
   classifier on each cron fire is **LLM-based by default**;
   hand-written string-match classifiers are forbidden for any cron
   output that triggers operator-required notifications.
+- `[DECISION] session-log persistence` (added 2026-05-18 from CRUX-Land
+  run 1 post-mortem) — the mechanism for replicating agent state
+  (session JSONLs, telemetry, browser media, operator-side cron state)
+  to durable storage independent of the controller VM. Includes the
+  destination, the cadence of replication, and the retirement-archive
+  path override.
 
 ### Guidance
 Capture more than you think you need. Post-hoc "I wish I had logged X"
@@ -563,6 +569,32 @@ patterns ("deposit posted") missed B4A's actual subject ("Your
 Deposit Has Cleared:..."), routing an urgent email to Slack-only.
 The cost case for "no LLM in cron" is wrong when the cron is
 load-bearing for operator-required notifications.
+
+**Replicate session state to durable storage continuously** (added
+2026-05-18). Don't treat the controller VM's local disk as the system
+of record for session JSONLs, telemetry, browser media, or
+operator-side cron state. CRUX-Land run 1 lost its entire Day-1
+session JSONL when the scaffold's retire-bootstrap cycle archived the
+original session to `/tmp/oc-session-retire-<ts>/` and a later VM
+stop/start wiped `/tmp`. The original session was the canonical record
+of Day 1's operator-agent dialogue — gone, unrecoverable.
+
+The fix is a continuous replication layer to durable cloud storage on
+a defined cadence — recommend ≤5 minutes via cron rsync to a per-run
+GCS prefix. `gcloud storage rsync` (or equivalent) only uploads diffs,
+so the cost is small. With a 5-minute cadence, the worst-case loss
+window goes from "the entire run" to "≤5 minutes of writes."
+
+Also override the scaffold's retirement-archive path so retired
+sessions land on persistent disk (e.g. `~/.openclaw/retired/`) instead
+of `/tmp`, which doesn't survive VM stop/start, reboot, or crash. The
+retirement archive is the only copy of the prior session's history; it
+needs the same persistence guarantees as the live session itself.
+
+A shutdown hook that flushes state one final time on graceful stop is
+a useful third layer for runs on preemptible or otherwise short-lived
+instances. Not load-bearing on a non-preemptible VM with the rsync
+cadence above, but cheap.
 
 ### CRUX-Windows reference
 - Schema: `knostic/openclaw-telemetry` v0.1.0 plugin format — events
