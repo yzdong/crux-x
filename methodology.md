@@ -75,6 +75,21 @@ When the Designer produces a protocol, it mirrors the section list below and
 resolves every `[DECISION]`. When the Operator reads the protocol, every
 `[DECISION]` has a concrete value and no section is missing.
 
+The Operator's LLM session plays two temporal roles. **Designer** is the
+pre-run role described above. Once the run starts, the same LLM session
+becomes the **Copilot** — drafts directives the Operator sends to the
+Agent over Slack, classifies cron + webhook alerts via the §5 LLM-
+classifier slot, diagnoses tool-call patterns when the Operator pulls
+the session JSONL, helps draft the writeup. The Copilot is not the
+Agent: no direct external-party access, no scaffold-issued tools,
+bounded by what the Operator chooses to relay. Naming the Copilot
+phase explicitly (added 2026-05-22 from CRUX-Land run 1, which surfaced
+~100 Copilot turns through the first 48 hours where CRUX-Windows's
+Copilot phase had ~5 turns/day) lets future protocols budget for it
+instead of having it appear emergently mid-run. Three roles total:
+**Designer** + **Copilot** (two temporal phases of the Operator's LLM
+session) and the autonomous **Agent**.
+
 The Designer also produces a **manifest template** for the experiment,
 derived from the protocol it just wrote. The template is per-experiment
 (different experiments need different fields) and lists every t=0 slot
@@ -662,6 +677,15 @@ measured capability.
   infeasible the protocol returns to the Designer for re-scoping.
   Outside enumerated windows, the cron + multi-channel alerting layer
   (§5) handles state-surfacing without operator involvement.
+- `[DECISION] Copilot session` (added 2026-05-22 from CRUX-Land run 1)
+  — the Operator's LLM session continues from the Designer phase into
+  the run as the Copilot (see "How to use this document" for the
+  Designer-vs-Copilot phase split). Pre-kickoff fields: LLM model
+  (default: same model the Designer used, for context continuity),
+  expected token-budget envelope across the run, what the Copilot is
+  authorized to draft vs. what the Operator drafts directly, alert-
+  classification handoff (which §5 cron fires route to the Copilot
+  for triage before paging the Operator).
 
 ### Guidance
 
@@ -697,6 +721,17 @@ ones only when justified. Standard categories: `creds`, `2FA`,
 `captcha`, `biometric-id`, `payment`, `legal`, `final-publish`,
 `infra`, `agent-limitation`, `status-check`.
 
+**Copilot phase is load-bearing for multi-day real-world tasks** (added
+2026-05-22). CRUX-Windows ran ~5 Copilot turns/day on average; CRUX-
+Land ran ~100 Copilot turns through the first 48 hours alone. Anything
+the methodology requires at runtime — cron-fire classification (§5),
+intervention drafting (§6.3), writeup drafting (§4) — is in practice
+operated by the Copilot, not by the Operator typing from scratch. The
+Designer should budget Copilot tokens explicitly when sizing the
+Operator's local-Claude spend; for multi-day real-world tasks, expect
+Copilot to dominate the Operator-side token bill in the first 48-72
+hours.
+
 ### CRUX-Windows reference
 - Bootstrap: `"Read AGENTS.md and get started"` (verbatim CRUX-1 port).
 - Workspace docs: OpenClaw stock AGENTS / SOUL / IDENTITY / BOOTSTRAP /
@@ -718,6 +753,9 @@ ones only when justified. Standard categories: `creds`, `2FA`,
   routed to the agent's session).
 - Reserved human actions: final Microsoft Store publish-live click;
   anything the platform blocks from synthetic interaction.
+- Copilot phase: ~5 turns/day average through the active run, plus the
+  post-task-completion idle-burn investigation (the methodology gap
+  CRUX-Land later surfaced harder).
 
 ---
 
